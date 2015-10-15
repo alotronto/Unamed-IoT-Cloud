@@ -1,0 +1,73 @@
+#!/bin/bash
+#
+# /etc/rc.d/init.d/s4t_iotronic
+#
+# description: 
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+export PATH=/usr/lib64/qt-3.3/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
+CROSSBARPID=`ps aux | grep 'crossbar start' | grep -v grep | awk {'print $2'}`
+REVERSEPID=`ps aux | grep 'wstt.js -r -s 8080' | grep -v grep | awk {'print $2'}`
+S4TPID=`ps aux | grep 'node ./bin/server' | grep -v grep | awk {'print $2'}`
+
+# chkconfig: 2345 99 99
+# description: some startup script
+
+#2345 - levels to configure
+#99 - startup order
+#99 - stop order
+
+start() {
+    if [ -r $CROSSBARPID ]; then
+        cd /root/iotronic
+        crossbar start 2> /var/log/crossbar.log &
+        echo "WAMP ROUTER Crossbar is started"
+    else
+        echo "Crossbar is started its PID is $CROSSBARPID"
+    fi
+    
+    if [ -r $REVERSEPID ]; then
+        cd /root/smartME-Cloud/node_modules/node-reverse-wstunnel
+        ./bin/wstt.js -r -s 8080 > /var/log/reverseWT.log &
+        echo "Reverse WebSocket Tunnel is started"
+    else
+        echo "Reverse WebSocket Tunnel is started its PID is $REVERSEPID"
+    fi
+    
+    if [ -r $S4TPID ]; then
+        cd /root/smartME-Cloud/s4t-iotronic-standalone
+        ./bin/server > /var/log/s4t-iotronic.log &
+        echo "S4T Standalone Cloud is started"
+    else
+        echo "S4T Standalone Cloud its PID is $S4TPID"
+    fi
+}
+
+stop() {
+ kill -9 `ps aux | grep 'node ./bin/server' | grep -v grep | awk {'print $2'}` > /dev/null 2>&1
+ kill -9 `ps aux | grep 'wstt.js -r -s 8080' | grep -v grep | awk {'print $2'}` > /dev/null 2>&1
+ kill -9 `ps aux | grep 'crossbar start' | grep -v grep | awk {'print $2'}` > /dev/null 2>&1
+}
+
+case "$1" in 
+    start)
+       start
+       ;;
+    stop)
+       stop
+       ;;
+    restart)
+       stop
+       start
+       ;;
+    status)
+       # code to check status of app comes here 
+       # example: status program_name
+       ;;
+    *)
+       echo "Usage: $0 {start|stop|status|restart}"
+esac
+
+exit 0 

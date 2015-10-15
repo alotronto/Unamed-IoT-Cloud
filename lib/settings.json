@@ -7,15 +7,15 @@
                         "db":{
                                 "host":"localhost",
                                 "user":"root",
-                                "password":"root",
-                                "db_name":"stack4things"
+                                "password":"28bh0608",
+                                "db_name":"uic"
                         }
                 },
                 "wamp":
                 {
                         "url": "ws://localhost",
                         "port": "8181",
-                        "realm": "stack4things",
+                        "realm": "unamedIoTCloud",
                         "topic_command":"board.command",
                         "topic_connection": "board.connection"
                 },

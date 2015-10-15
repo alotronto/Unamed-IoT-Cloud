@@ -1,7 +1,7 @@
 {
-  "name": "s4t-iotronic-standalone",
-  "version": "0.0.2",
-  "description": "s4t-node-cloud is the implementation, totally in nodejs, of a personal cloud to remote manage embedded devices Arduino YUN/Linino One and Raspberry Pi.",
+  "name": "Unamed-IoT-Cloud",
+  "version": "0.0.0",
+  "description": "Forked from s4t-iotronic-standalone a MDSLab project, it is an implementation, totally written in nodejs, of a Cloud Infrastructure to  manage remotely every kind of devices where is installed the respective client software.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,11 +12,12 @@
     "ip": ">=0.3.3",
     "uuid":">=2.0.1",
     "autobahn": ">=0.9.6",
-    "express": ">=4.13.1"
+    "express": ">=4.13.1",
+    "node-reverse-wstunnel": ">=0.1.2"	
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/MDSLab/s4t-iotronic-standalone.git"
+    "url": "https://github.com/alotronto/Unamed-IoT-Cloud.git"
   },
   "keywords": [
     "cloud",
@@ -32,11 +33,11 @@
   "license": [
     {
       "type": "Apache-2.0",
-      "url": "https://github.com/MDSLab/s4t-iotronic-standalone/LICENSE"
+      "url": "https://github.com/alotronto/Unamed-IoT-Cloud/LICENSE"
     }
   ],
   "bugs": {
-    "url": "https://github.com/MDSLab/s4t-iotronic-standalone/issues"
+    "url": "https://github.com/alotronto/Unamed-IoT-Cloud/issues"
   },
-  "homepage": "https://github.com/MDSLab/s4t-iotronic-standalone"
+  "homepage": "https://github.com/alotronto/Unamed-IoT-Cloud/"
 }

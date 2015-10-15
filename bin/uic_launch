@@ -1,0 +1,79 @@
+
+#!/bin/bash
+
+# Unamed IoT Cloud needs other two services, a WAMP router and 
+# a Reverse Websocket Tunnel Server
+# This bash script automatize the starting process for the Unamed IoT Cloud
+
+UIC_PATH=/home/andrea/Development/GitHub-alotronto/s4t-iotronic-standalone
+export PATH=/usr/lib64/qt-3.3/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
+CROSSBARPID=`ps aux | grep 'crossbar start' | grep -v grep | awk {'print $2'}`
+REVERSEPID=`ps aux | grep 'wstt.js -r -s 8080' | grep -v grep | awk {'print $2'}`
+S4TPID=`ps aux | grep 'node ./bin/server' | grep -v grep | awk {'print $2'}`
+
+
+start() {
+    if [ -r $CROSSBARPID ]; then
+        cd $UIC_PATH/etc/wamp_router
+        crossbar start >> /var/log/crossbar.log 2>&1 &
+        echo "WAMP ROUTER Crossbar is started"
+    else
+        kill -9 `ps aux | grep 'crossbar start' | grep -v grep | awk {'print $2'}` > /dev/null 2>&1
+        cd $PATH/bin/wamp_router
+        crossbar start >> /var/log/crossbar.log 2>&1 &
+        echo "WAMP ROUTER Crossbar is started"
+    fi
+    
+    sleep 5
+
+    if [ -r $REVERSEPID ]; then
+        cd $UIC_PATH/node_modules/node-reverse-wstunnel
+        ./bin/wstt.js -r -s 8080 >> /var/log/node_reverse_wstunnel.log 2>&1 &
+        echo "Reverse WebSocket Tunnel is started"
+    else
+        kill -9 `ps aux | grep 'wstt.js -r -s 8080' | grep -v grep | awk {'print $2'}` > /dev/null 2>&1
+        cd $UIC_PATH/node_modules/node-reverse-wstunnel
+        ./bin/wstt.js -r -s 8080 >> /var/log/node_reverse_wstunnel.log 2>&1 &
+        echo "Reverse WebSocket Tunnel is started"
+    fi
+
+    sleep 5
+    
+    if [ -r $S4TPID ]; then
+        cd $UIC_PATH
+        ./bin/uic >> /var/log/s4t-iotronic.log 2>&1 &
+        echo "S4T Standalone Cloud is started"
+    else
+        kill -9 `ps aux | grep 'node ./bin/uic' | grep -v grep | awk {'print $2'}` > /dev/null 2>&1
+        cd $UIC_PATH
+        ./bin/uic >> /var/log/s4t-iotronic.log 2>&1 &
+        echo "S4T Standalone Cloud is started"
+    fi
+}
+
+stop() {
+ kill -9 `ps aux | grep 'node ./bin/server' | grep -v grep | awk {'print $2'}` > /dev/null 2>&1
+ kill -9 `ps aux | grep 'wstt.js -r -s 8080' | grep -v grep | awk {'print $2'}` > /dev/null 2>&1
+ kill -9 `ps aux | grep 'crossbar start' | grep -v grep | awk {'print $2'}` > /dev/null 2>&1
+}
+
+case "$1" in 
+    start)
+       start
+       ;;
+    stop)
+       stop
+       ;;
+    restart)
+       stop
+       start
+       ;;
+    status)
+       # code to check status of app comes here 
+       # example: status program_name
+       ;;
+    *)
+       echo "Usage: $0 {start|stop|status|restart}"
+esac
+
+exit 0 
